@@ -7,6 +7,7 @@ import HRRegister from "./Hr";
 import AdminDashboard from "./Admin";
 import AdminLogin from "./Adminlogin";
 import Payroll from "./Payroll";
+import Register from "./Register";
 export default function App() {
   return (
   
@@ -19,6 +20,8 @@ export default function App() {
          <Route path="/admin" element={<AdminDashboard />} />
          <Route path="/" element={<AdminLogin/>}/>
          <Route path="payroll" element={<Payroll/>}/>
+         <Route path="/register" element={<Register />} />
+
 
       </Routes>
   
