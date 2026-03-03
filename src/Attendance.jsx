@@ -1721,7 +1721,1390 @@
 //     </div>
 //   );
 // }
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   getDocs,
+//   query,
+//   where,
+//   updateDoc,
+//   doc
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+
+//   const today = new Date().toDateString();
+
+//   /* ================= LOAD ATTENDANCE ================= */
+//   useEffect(() => {
+//     const loadAttendance = async () => {
+//       const q = query(
+//         collection(db, "attendance"),
+//         where("uid", "==", uid)
+//       );
+
+//       const snap = await getDocs(q);
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+//       setRecords(data);
+
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     };
+
+//     loadAttendance();
+//   }, [uid]);
+
+//   /* ================= CHECK IN ================= */
+//   const handleCheckIn = async () => {
+//     if (currentRecord) {
+//       alert("Already checked in today");
+//       return;
+//     }
+
+//     const now = new Date();
+
+//     await addDoc(collection(db, "attendance"), {
+//       uid,
+//       name,
+//       date: today,
+//       checkIn: now.toLocaleTimeString(),
+//       checkInTimeISO: now.toISOString(), // 🔥 store ISO for calculation
+//       checkOut: "",
+//       hours: "",
+//       createdAt: Date.now()
+//     });
+
+//     alert("Check-in successful");
+//     window.location.reload();
+//   };
+  
+
+//   /* ================= CHECK OUT ================= */
+//   const handleCheckOut = async () => {
+//     if (!currentRecord) {
+//       alert("No active check-in");
+//       return;
+//     }
+
+//     const now = new Date();
+//     const checkInTime = new Date(currentRecord.checkInTimeISO);
+
+//     // 🔥 CALCULATE HOURS
+//     const diffMs = now - checkInTime; // milliseconds
+//     const hoursWorked = (diffMs / (1000 * 60 * 60)).toFixed(2); // hours with 2 decimals
+
+//     await updateDoc(doc(db, "attendance", currentRecord.id), {
+//       checkOut: now.toLocaleTimeString(),
+//       hours: hoursWorked
+//     });
+
+//     alert(`Check-out successful. Hours worked: ${hoursWorked}`);
+//     window.location.reload();
+//   };
+
+//   return (
+//     <div>
+//       <h2>Attendance</h2>
+
+//       <button onClick={handleCheckIn}>Check In</button>
+//       <button onClick={handleCheckOut}>Check Out</button>
+
+//       <h3>Your Records</h3>
+
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Date</th>
+//             <th>Name</th>
+//             <th>Check In</th>
+//             <th>Check Out</th>
+//             <th>Hours</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {records.map(r => (
+//             <tr key={r.id}>
+//               <td>{r.date}</td>
+//               <td>{r.name}</td>
+//               <td>{r.checkIn}</td>
+//               <td>{r.checkOut || "-"}</td>
+//               <td>{r.hours || "-"}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+// import React, { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   getDocs,
+//   query,
+//   where,
+//   updateDoc,
+//   doc
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+// import {
+//   collection,
+//   addDoc,
+//   getDocs,
+//   query,
+//   where,
+//   updateDoc,
+//   doc,
+//   onSnapshot,
+//   orderBy
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+
+//   const today = new Date().toDateString();
+//   /* ================= LOAD LEAVES ================= */
+// useEffect(() => {
+//   const q = query(
+//     collection(db, "leaves"),
+//     where("uid", "==", uid),
+//     orderBy("createdAt", "desc")
+//   );
+
+//   const unsubscribe = onSnapshot(q, (snapshot) => {
+//     const data = snapshot.docs.map(doc => ({
+//       id: doc.id,
+//       ...doc.data()
+//     }));
+//     setLeaves(data);
+//   });
+
+//   return () => unsubscribe();
+// }, [uid]);
+
+
+//   /* ================= LOAD ATTENDANCE ================= */
+//   useEffect(() => {
+//     const loadAttendance = async () => {
+//       const q = query(
+//         collection(db, "attendance"),
+//         where("uid", "==", uid)
+//       );
+
+//       const snap = await getDocs(q);
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+//       setRecords(data);
+
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     };
+
+//     loadAttendance();
+//   }, [uid]);
+//   const [leaves, setLeaves] = useState([]);
+//   const [leaveReason, setLeaveReason] = useState("");
+//   const [leaveDate, setLeaveDate] = useState("");
+
+//     const handleLeaveSubmit = async () => {
+//     if (!leaveDate || !leaveReason) {
+//       alert("Please enter date and reason for leave.");
+//       return;
+//     }
+//         await addDoc(collection(db, "leaves"), {
+//       uid,
+//       name,
+//       date: leaveDate,
+//       reason: leaveReason,
+//       status: "Pending",
+//       createdAt: Date.now()
+//     });
+
+//     setLeaveDate("");
+//     setLeaveReason("");
+//     alert("Leave applied successfully!");
+//   };
+
+//   // Filter leaves for this employee
+//   const myLeaves = leaves.filter(l => l.name === name);
+
+
+
+//   /* ================= CHECK IN ================= */
+//   const handleCheckIn = async () => {
+//     if (currentRecord) {
+//       alert("Already checked in today");
+//       return;
+//     }
+
+//     const now = new Date();
+
+//     await addDoc(collection(db, "attendance"), {
+//       uid,
+//       name,
+//       date: today,
+//       checkIn: now.toLocaleTimeString(),
+//       checkInTimeISO: now.toISOString(), // 🔥 store ISO for calculation
+//       checkOut: "",
+//       hours: "",
+//       createdAt: Date.now()
+//     });
+
+//     alert("Check-in successful");
+//     window.location.reload();
+//   };
+  
+
+//   /* ================= CHECK OUT ================= */
+// const handleCheckOut = async () => {
+//   if (!currentRecord) {
+//     alert("No active check-in");
+//     return;
+//   }
+
+//   const now = new Date();
+//   const checkInTime = new Date(currentRecord.checkInTimeISO);
+
+//   // Calculate hours & minutes
+//   const diffMs = now - checkInTime;
+//   const totalMinutes = Math.floor(diffMs / (1000 * 60));
+//   const hours = Math.floor(totalMinutes / 60);
+//   const minutes = totalMinutes % 60;
+//   const hoursWorked = `${hours} hr ${minutes} min`;
+
+//   await updateDoc(doc(db, "attendance", currentRecord.id), {
+//     checkOut: now.toLocaleTimeString(),
+//     hours: hoursWorked
+//   });
+
+//   alert(`Check-out successful. Hours worked: ${hoursWorked}`);
+// };
+
+
+//  return (
+//   <div>
+//     {/* ===== Attendance Section ===== */}
+//     <div>
+//       <h2>Hi Welcome {name} !</h2>
+
+//       <button onClick={handleCheckIn}>Check In</button>
+//       <button onClick={handleCheckOut}>Check Out</button>
+
+//       <h3>Your Records</h3>
+
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Date</th>
+//             <th>Name</th>
+//             <th>Check In</th>
+//             <th>Check Out</th>
+//             <th>Hours</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {records.map(r => (
+//             <tr key={r.id}>
+//               <td>{r.date}</td>
+//               <td>{r.name}</td>
+//               <td>{r.checkIn || "-"}</td>
+//               <td>{r.checkOut || "-"}</td>
+//               <td>{r.hours || "-"}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+
+//     {/* ===== Apply Leave ===== */}
+//     <div className="card">
+//       <h2>Apply for Leave</h2>
+
+//       <input
+//         type="date"
+//         className="input"
+//         value={leaveDate}
+//         onChange={(e) => setLeaveDate(e.target.value)}
+//       />
+
+//       <input
+//         type="text"
+//         className="input"
+//         placeholder="Reason for leave"
+//         value={leaveReason}
+//         onChange={(e) => setLeaveReason(e.target.value)}
+//       />
+
+//       <button className="btn btn-checkin" onClick={handleLeaveSubmit}>
+//         Apply Leave
+//       </button>
+//     </div>
+
+//     {/* ===== Leave Records ===== */}
+//     <div className="card">
+//       <h2>Leave Records</h2>
+
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Name</th>
+//             <th>Date</th>
+//             <th>Reason</th>
+//             <th>Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+         
+//             {myLeaves.map(l  => (
+//               <tr key={l.id}>
+//                 <td>{l.name}</td>
+//                 <td>{l.date}</td>
+//                 <td>{l.reason}</td>
+//                 <td>{l.status}</td>
+//               </tr>
+//             ))}
+          
+//         </tbody>
+//       </table>
+//     </div>
+//   </div>
+// );
+// }
+// import React, { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   updateDoc,
+//   doc,
+//   query,
+//   where,
+//   orderBy,
+//   onSnapshot
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+// import "./Attendance.css";
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+//   const [leaves, setLeaves] = useState([]);
+//   const [leaveDate, setLeaveDate] = useState("");
+//   const [leaveReason, setLeaveReason] = useState("");
+
+//   const today = new Date().toDateString();
+
+//   // Load attendance in real-time
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "attendance"),
+//       where("uid", "==", uid),
+//       orderBy("createdAt", "desc")
+//     );
+
+//     const unsubscribe = onSnapshot(q, snap => {
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+//       setRecords(data);
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   // Load leaves in real-time
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "leaves"),
+//       where("uid", "==", uid),
+//       orderBy("createdAt", "desc")
+//     );
+
+//     const unsubscribe = onSnapshot(q, snap => {
+//       setLeaves(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   // Check-in
+//   const handleCheckIn = async () => {
+//     if (currentRecord) return alert("Already checked in today");
+
+//     const now = new Date();
+//     await addDoc(collection(db, "attendance"), {
+//       uid,
+//       name,
+//       date: today,
+//       checkIn: now.toLocaleTimeString(),
+//       checkInTimeISO: now.toISOString(),
+//       checkOut: "",
+//       hours: "",
+//       createdAt: Date.now()
+//     });
+//     alert("Check-in successful!");
+//   };
+
+//   // Check-out
+//   const handleCheckOut = async () => {
+//     if (!currentRecord) return alert("No active check-in");
+
+//     const now = new Date();
+//     const checkInTime = new Date(currentRecord.checkInTimeISO);
+//     const hoursWorked = ((now - checkInTime) / (1000 * 60 * 60)).toFixed(2);
+
+//     await updateDoc(doc(db, "attendance", currentRecord.id), {
+//       checkOut: now.toLocaleTimeString(),
+//       hours: hoursWorked
+//     });
+
+//     alert(`Check-out successful. Hours worked: ${hoursWorked}`);
+//   };
+
+//   // Apply leave
+//   const handleLeaveSubmit = async () => {
+//     if (!leaveDate || !leaveReason) return alert("Enter date & reason");
+
+//     await addDoc(collection(db, "leaves"), {
+//       uid,
+//       name,
+//       date: leaveDate,
+//       reason: leaveReason,
+//       status: "Pending",
+//       createdAt: Date.now()
+//     });
+
+//     setLeaveDate("");
+//     setLeaveReason("");
+//     alert("Leave applied successfully!");
+//   };
+
+//   return (
+//     <div>
+//       <h2>Hi, Welcome {name}!</h2>
+
+//       <div>
+//         <button onClick={handleCheckIn}>Check In</button>
+//         <button onClick={handleCheckOut}>Check Out</button>
+//       </div>
+
+//       <h3>Your Attendance Records</h3>
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Date</th>
+//             <th>Name</th>
+//             <th>Check In</th>
+//             <th>Check Out</th>
+//             <th>Hours</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {records.length === 0 ? (
+//             <tr>
+//               <td colSpan="5" style={{ textAlign: "center" }}>No attendance records yet.</td>
+//             </tr>
+//           ) : (
+//             records.map(r => (
+//               <tr key={r.id}>
+//                 <td>{r.date}</td>
+//                 <td>{r.name}</td>
+//                 <td>{r.checkIn || "-"}</td>
+//                 <td>{r.checkOut || "-"}</td>
+//                 <td>{r.hours || "-"}</td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+
+//       <div className="card">
+//         <h2>Apply Leave</h2>
+//         <input type="date" value={leaveDate} onChange={e => setLeaveDate(e.target.value)} />
+//         <input type="text" placeholder="Reason for leave" value={leaveReason} onChange={e => setLeaveReason(e.target.value)} />
+//         <button onClick={handleLeaveSubmit}>Apply Leave</button>
+//       </div>
+
+//       <h3>Your Leave Records</h3>
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Name</th>
+//             <th>Date</th>
+//             <th>Reason</th>
+//             <th>Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {leaves.length === 0 ? (
+//             <tr>
+//               <td colSpan="4" style={{ textAlign: "center" }}>No leave applications yet.</td>
+//             </tr>
+//           ) : (
+//             leaves.map(l => (
+//               <tr key={l.id}>
+//                 <td>{l.name}</td>
+//                 <td>{l.date}</td>
+//                 <td>{l.reason}</td>
+//                 <td>{l.status}</td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+// import React, { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   updateDoc,
+//   doc,
+//   query,
+//   where,
+//   orderBy,
+//   onSnapshot
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+// import "./Attendance.css";
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+//   const [leaves, setLeaves] = useState([]);
+//   const [leaveDate, setLeaveDate] = useState("");
+//   const [leaveReason, setLeaveReason] = useState("");
+
+//   const today = new Date().toDateString();
+
+//   // Load attendance in real-time
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "attendance"),
+//       where("uid", "==", uid),
+//       orderBy("createdAt", "desc")
+//     );
+
+//     const unsubscribe = onSnapshot(q, snap => {
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+//       setRecords(data);
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   // Load leaves in real-time
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "leaves"),
+//       where("uid", "==", uid),
+//       orderBy("createdAt", "desc")
+//     );
+
+//     const unsubscribe = onSnapshot(q, snap => {
+//       setLeaves(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   // Check-in
+//   const handleCheckIn = async () => {
+//     if (currentRecord) return alert("Already checked in today");
+
+//     const now = new Date();
+//     await addDoc(collection(db, "attendance"), {
+//       uid,
+//       name,
+//       date: today,
+//       checkIn: now.toLocaleTimeString(),
+//       checkInTimeISO: now.toISOString(),
+//       checkOut: "",
+//       hours: "",
+//       createdAt: Date.now()
+//     });
+//     alert("Check-in successful!");
+//   };
+
+//   // Check-out
+//   const handleCheckOut = async () => {
+//     if (!currentRecord) return alert("No active check-in");
+
+//     const now = new Date();
+//     const checkInTime = new Date(currentRecord.checkInTimeISO);
+//     const hoursWorked = ((now - checkInTime) / (1000 * 60 * 60)).toFixed(2);
+
+//     await updateDoc(doc(db, "attendance", currentRecord.id), {
+//       checkOut: now.toLocaleTimeString(),
+//       hours: hoursWorked
+//     });
+
+//     alert(`Check-out successful. Hours worked: ${hoursWorked}`);
+//   };
+
+//   // Apply leave
+//   const handleLeaveSubmit = async () => {
+//     if (!leaveDate || !leaveReason) return alert("Enter date & reason");
+
+//     await addDoc(collection(db, "leaves"), {
+//       uid,
+//       name,
+//       date: leaveDate,
+//       reason: leaveReason,
+//       status: "Pending",
+//       createdAt: Date.now()
+//     });
+
+//     setLeaveDate("");
+//     setLeaveReason("");
+//     alert("Leave applied successfully!");
+//   };
+
+//   return (
+//     <div>
+//       <h2>Hi, Welcome {name}!</h2>
+
+//       <div>
+//         <button onClick={handleCheckIn}>Check In</button>
+//         <button onClick={handleCheckOut}>Check Out</button>
+//       </div>
+
+//       <h3>Your Attendance Records</h3>
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Date</th>
+//             <th>Name</th>
+//             <th>Check In</th>
+//             <th>Check Out</th>
+//             <th>Hours</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {records.length === 0 ? (
+//             <tr>
+//               <td colSpan="5" style={{ textAlign: "center" }}>
+//                 No attendance records yet.
+//               </td>
+//             </tr>
+//           ) : (
+//             records.map(r => (
+//               <tr key={r.id}>
+//                 <td>{r.date}</td>
+//                 <td>{r.name}</td>
+//                 <td>{r.checkIn || "-"}</td>
+//                 <td>{r.checkOut || "-"}</td>
+//                 <td>{r.hours || "-"}</td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+
+//       <div className="card">
+//         <h2>Apply Leave</h2>
+//         <input
+//           type="date"
+//           value={leaveDate}
+//           onChange={e => setLeaveDate(e.target.value)}
+//         />
+//         <input
+//           type="text"
+//           placeholder="Reason for leave"
+//           value={leaveReason}
+//           onChange={e => setLeaveReason(e.target.value)}
+//         />
+//         <button onClick={handleLeaveSubmit}>Apply Leave</button>
+//       </div>
+
+//       <h3>Your Leave Records</h3>
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Name</th>
+//             <th>Date</th>
+//             <th>Reason</th>
+//             <th>Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {leaves.length === 0 ? (
+//             <tr>
+//               <td colSpan="4" style={{ textAlign: "center" }}>
+//                 No leave applications yet.
+//               </td>
+//             </tr>
+//           ) : (
+//             leaves.map(l => (
+//               <tr key={l.id}>
+//                 <td>{l.name}</td>
+//                 <td>{l.date}</td>
+//                 <td>{l.reason}</td>
+//                 <td>{l.status}</td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+// import { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   getDocs,
+//   query,
+//   where,
+//   updateDoc,
+//   doc,
+//   onSnapshot
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   /* ================= STATE ================= */
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+
+//   const [leaves, setLeaves] = useState([]);
+//   const [leaveReason, setLeaveReason] = useState("");
+//   const [leaveDate, setLeaveDate] = useState("");
+
+//   const today = new Date().toDateString();
+
+//   /* ================= LOAD LEAVES (REALTIME) ================= */
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "leaves"),
+//       where("uid", "==", uid)
+//     );
+
+//     const unsubscribe = onSnapshot(q, (snapshot) => {
+//       const data = snapshot.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       setLeaves(data);
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   /* ================= LOAD ATTENDANCE ================= */
+//   useEffect(() => {
+//     const loadAttendance = async () => {
+//       const q = query(
+//         collection(db, "attendance"),
+//         where("uid", "==", uid)
+//       );
+
+//       const snap = await getDocs(q);
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+//       setRecords(data);
+
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     };
+
+//     loadAttendance();
+//   }, [uid, today]);
+
+//   /* ================= APPLY LEAVE ================= */
+//   const handleLeaveSubmit = async () => {
+//     if (!leaveDate || !leaveReason) {
+//       alert("Please enter date and reason for leave.");
+//       return;
+//     }
+
+//     await addDoc(collection(db, "leaves"), {
+//       uid,
+//       name,
+//       date: leaveDate,
+//       reason: leaveReason,
+//       status: "Pending",
+//       createdAt: Date.now()
+//     });
+
+//     setLeaveDate("");
+//     setLeaveReason("");
+//     alert("Leave applied successfully!");
+//   };
+
+//   /* ================= CHECK IN ================= */
+//   const handleCheckIn = async () => {
+//     if (currentRecord) {
+//       alert("Already checked in today");
+//       return;
+//     }
+
+//     const now = new Date();
+
+//     await addDoc(collection(db, "attendance"), {
+//       uid,
+//       name,
+//       date: today,
+//       checkIn: now.toLocaleTimeString(),
+//       checkInTimeISO: now.toISOString(),
+//       checkOut: "",
+//       hours: "",
+//       createdAt: Date.now()
+//     });
+
+//     alert("Check-in successful");
+//   };
+
+//   /* ================= CHECK OUT ================= */
+//   const handleCheckOut = async () => {
+//     if (!currentRecord) {
+//       alert("No active check-in");
+//       return;
+//     }
+
+//     const now = new Date();
+//     const checkInTime = new Date(currentRecord.checkInTimeISO);
+
+//     const diffMs = now - checkInTime;
+//     const totalMinutes = Math.floor(diffMs / (1000 * 60));
+//     const hours = Math.floor(totalMinutes / 60);
+//     const minutes = totalMinutes % 60;
+
+//     await updateDoc(doc(db, "attendance", currentRecord.id), {
+//       checkOut: now.toLocaleTimeString(),
+//       hours: `${hours} hr ${minutes} min`
+//     });
+
+//     alert("Check-out successful");
+//   };
+
+//   /* ================= UI ================= */
+//   return (
+//     <div>
+// <h2 style={{ textAlign: "center" }}>
+//   Hi Welcome{" "}
+//   <span style={{ color: "#e32b87ff", fontWeight: "700" }}>
+//     {name}
+//   </span>
+//   !
+// </h2>
+
+
+// <div
+//   style={{
+//     display: "flex",
+//     justifyContent: "center",
+//     gap: "50px",
+//     margin: "20px 0"
+//   }}
+// >
+//   <button
+//     onClick={handleCheckIn}
+//     style={{
+//       backgroundColor: "#22c55e",
+//       color: "#fff",
+//       padding: "10px 20px",
+//       border: "none",
+//       borderRadius: "6px",
+//       cursor: "pointer",
+//       fontWeight: "600"
+//     }}
+//   >
+//     Check In
+//   </button>
+
+//   <button
+//     onClick={handleCheckOut}
+//     style={{
+//       backgroundColor: "#ef4444",
+//       color: "#fff",
+//       padding: "10px 20px",
+//       border: "none",
+//       borderRadius: "6px",
+//       cursor: "pointer",
+//       fontWeight: "600"
+//     }}
+//   >
+//     Check Out
+//   </button>
+// </div>
+
+
+
+//       {/* ===== Attendance Records ===== */}
+//       <h3>Your Attendance Records</h3>
+//       <table className="table">
+//         <thead>
+//           <tr>
+//             <th>Date</th>
+//             <th>Name</th>
+//             <th>Check In</th>
+//             <th>Check Out</th>
+//             <th>Hours</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {records.length === 0 ? (
+//             <tr>
+//               <td colSpan="5">No attendance records</td>
+//             </tr>
+//           ) : (
+//             records.map(r => (
+//               <tr key={r.id}>
+//                 <td>{r.date}</td>
+//                 <td>{r.name}</td>
+//                 <td>{r.checkIn || "-"}</td>
+//                 <td>{r.checkOut || "-"}</td>
+//                 <td>{r.hours || "-"}</td>
+//               </tr>
+//             ))
+//           )}
+//         </tbody>
+//       </table>
+
+//       {/* ===== Apply Leave ===== */}
+//       <div className="card">
+//         <h2>Apply for Leave</h2>
+
+//         <input
+//           type="date"
+//           value={leaveDate}
+//           onChange={(e) => setLeaveDate(e.target.value)}
+//         />
+
+//         <input
+//           type="text"
+//           placeholder="Reason"
+//           value={leaveReason}
+//           onChange={(e) => setLeaveReason(e.target.value)}
+//         />
+
+//         <button onClick={handleLeaveSubmit}>Apply Leave</button>
+//       </div>
+
+//       {/* ===== Leave Records ===== */}
+//       <div className="card">
+//         <h2>Leave Records</h2>
+
+//         <table className="table">
+//           <thead>
+//             <tr>
+//               <th>Name</th>
+//               <th>Date</th>
+//               <th>Reason</th>
+//               <th>Status</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {leaves.length === 0 ? (
+//               <tr>
+//                 <td colSpan="4">No leave records</td>
+//               </tr>
+//             ) : (
+//               leaves.map(l => (
+//                 <tr key={l.id}>
+//                   <td>{l.name}</td>
+//                   <td>{l.date}</td>
+//                   <td>{l.reason}</td>
+//                   <td>{l.status}</td>
+//                 </tr>
+//               ))
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </div>
+//   );
+// }
+// import { useEffect, useState } from "react";
+// import {
+//   collection,
+//   addDoc,
+//   getDocs,
+//   query,
+//   where,
+//   updateDoc,
+//   doc,
+//   onSnapshot
+// } from "firebase/firestore";
+// import { db } from "./firebase";
+
+
+// const OFFICE_LAT = 17.448381;   
+// const OFFICE_LNG = 78.399465;   
+// const ALLOWED_RADIUS = 100;     
+
+// /* ================= DISTANCE FUNCTION ================= */
+// function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+//   const R = 6371000;
+//   const dLat = ((lat2 - lat1) * Math.PI) / 180;
+//   const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+//   const a =
+//     Math.sin(dLat / 2) ** 2 +
+//     Math.cos(lat1 * Math.PI / 180) *
+//       Math.cos(lat2 * Math.PI / 180) *
+//       Math.sin(dLon / 2) ** 2;
+
+//   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+// }
+
+// export default function Attendance() {
+//   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
+
+//   if (!loggedEmployee) {
+//     alert("Login again");
+//     return null;
+//   }
+
+//   const uid = loggedEmployee.uid;
+//   const name = loggedEmployee.name;
+
+//   const [records, setRecords] = useState([]);
+//   const [currentRecord, setCurrentRecord] = useState(null);
+
+//   const [leaves, setLeaves] = useState([]);
+//   const [leaveReason, setLeaveReason] = useState("");
+//   const [leaveDate, setLeaveDate] = useState("");
+
+//   const today = new Date().toDateString();
+
+//   useEffect(() => {
+//     const q = query(
+//       collection(db, "leaves"),
+//       where("uid", "==", uid)
+//     );
+
+//     const unsubscribe = onSnapshot(q, (snapshot) => {
+//       const data = snapshot.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       setLeaves(data);
+//     });
+
+//     return () => unsubscribe();
+//   }, [uid]);
+
+//   /* ================= LOAD ATTENDANCE ================= */
+//   useEffect(() => {
+//     const loadAttendance = async () => {
+//       const q = query(
+//         collection(db, "attendance"),
+//         where("uid", "==", uid)
+//       );
+
+//       const snap = await getDocs(q);
+//       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+//       setRecords(data);
+
+//       const open = data.find(r => r.date === today && !r.checkOut);
+//       setCurrentRecord(open || null);
+//     };
+
+//     loadAttendance();
+//   }, [uid, today]);
+
+//   /* ================= APPLY LEAVE ================= */
+//   const handleLeaveSubmit = async () => {
+//     if (!leaveDate || !leaveReason) {
+//       alert("Please enter date and reason");
+//       return;
+//     }
+
+//     await addDoc(collection(db, "leaves"), {
+//       uid,
+//       name,
+//       date: leaveDate,
+//       reason: leaveReason,
+//       status: "Pending",
+//       createdAt: Date.now()
+//     });
+
+//     setLeaveDate("");
+//     setLeaveReason("");
+//     alert("Leave applied successfully!");
+//   };
+
+//   const handleCheckIn = async () => {
+//     if (currentRecord) {
+//       alert("Already checked in today");
+//       return;
+//     }
+
+//     if (!navigator.geolocation) {
+//       alert("Geolocation not supported");
+//       return;
+//     }
+
+//     navigator.geolocation.getCurrentPosition(
+//       async (position) => {
+//         const userLat = position.coords.latitude;
+//         const userLng = position.coords.longitude;
+
+//         const distance = getDistanceInMeters(
+//           userLat,
+//           userLng,
+//           OFFICE_LAT,
+//           OFFICE_LNG
+//         );
+
+//         if (distance > ALLOWED_RADIUS) {
+//           alert("❌ You are not at office location. Check-in denied.");
+//           return;
+//         }
+
+//         const now = new Date();
+
+//         await addDoc(collection(db, "attendance"), {
+//           uid,
+//           name,
+//           date: today,
+//           checkIn: now.toLocaleTimeString(),
+//           checkInTimeISO: now.toISOString(),
+//           checkOut: "",
+//           hours: "",
+//           createdAt: Date.now(),
+//           location: {
+//             lat: userLat,
+//             lng: userLng
+//           }
+//         });
+
+//         alert("✅ Check-in successful");
+//       },
+//       () => {
+//         alert("❌ Location permission denied");
+//       }
+//     );
+//   };
+
+//   /* ================= CHECK OUT ================= */
+//   const handleCheckOut = async () => {
+//     if (!currentRecord) {
+//       alert("No active check-in");
+//       return;
+//     }
+
+//     const now = new Date();
+//     const checkInTime = new Date(currentRecord.checkInTimeISO);
+
+//     const diffMs = now - checkInTime;
+//     const totalMinutes = Math.floor(diffMs / (1000 * 60));
+//     const hours = Math.floor(totalMinutes / 60);
+//     const minutes = totalMinutes % 60;
+
+//     await updateDoc(doc(db, "attendance", currentRecord.id), {
+//       checkOut: now.toLocaleTimeString(),
+//       hours: `${hours} hr ${minutes} min`
+//     });
+
+//     alert("Check-out successful");
+//   };
+
+
+// return (
+//   <div className="attendance-container">
+//     <div className="vamsi" style={{backgroundColor:"grey"}}>
+
+//     <h2 style={{ textAlign: "center" }}>
+//       Hi Welcome{" "}
+//       <span style={{ color: "#e32b87ff", fontWeight: "700"}}>
+//         {name}
+//       </span>
+//       !
+//     </h2>
+//     </div>
+
+//     <div
+//       style={{
+//         display: "flex",
+//         justifyContent: "center",
+//         gap: "40px",
+//         margin: "20px 0",
+//         flexWrap: "wrap"
+
+
+        
+      
+//       }}
+//     >
+//       <button
+//   style={{ backgroundColor: "green", padding: "15px", borderRadius:"5px" }}
+
+//         onClick={handleCheckIn}
+//         className="madhu"
+//       >
+//         Check In
+//       </button>
+
+//       <button
+//        style={{ backgroundColor: "red", padding: "15px", borderRadius:"5px" }}
+//         onClick={handleCheckOut}
+//         className="satya"
+//       >
+//         Check Out
+//       </button>
+//     </div>
+
+//     {/* ===== Attendance ===== */}
+//     <div className="wrapper">
+//       <h3>Your Attendance Records</h3>
+
+//       <div className="sat">
+//         <table className="table">
+//           <thead>
+//             <tr>
+//               <th>Date</th>
+//               <th>Name</th>
+//               <th>Check In</th>
+//               <th>Check Out</th>
+//               <th>Hours</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {records.length === 0 ? (
+//               <tr>
+//                 <td colSpan="5" style={{ textAlign: "center" }}>
+//                   No records
+//                 </td>
+//               </tr> 
+//             ) : (
+//               records.map(r => (
+//                 <tr key={r.id}>
+//                   <td>{r.date}</td>
+//                   <td>{r.name}</td>
+//                   <td>{r.checkIn || "-"}</td>
+//                   <td>{r.checkOut || "-"}</td>
+//                   <td>{r.hours || "-"}</td>
+//                 </tr>
+//               ))
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </div>
+
+//     {/* ===== APPLY LEAVE ===== */}
+//     <div className="card">
+//       <h2>Apply for Leave</h2>
+
+//       <input
+//         type="date"
+//         value={leaveDate}
+//         onChange={(e) => setLeaveDate(e.target.value)}
+//       />
+
+//       <input
+//         type="text"
+//         placeholder="Reason"
+//         value={leaveReason}
+//         onChange={(e) => setLeaveReason(e.target.value)}
+//       />
+
+//       <button className="btn btn-checkin" onClick={handleLeaveSubmit}>
+//         Apply Leave
+//       </button>
+//     </div>
+
+//     {/* ===== LEAVE RECORDS ===== */}
+//     <div className="card">
+//       <h2>Leave Records</h2>
+
+//       <div className="sat">
+//         <table className="table">
+//           <thead>
+//             <tr>
+//               <th>Name</th>
+//               <th>Date</th>
+//               <th>Reason</th>
+//               <th>Status</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {leaves.length === 0 ? (
+//               <tr>
+//                 <td colSpan="4" style={{ textAlign: "center" }}>
+//                   No leave records
+//                 </td>
+//               </tr>
+//             ) : (
+//               leaves.map(l => (
+//                 <tr key={l.id}>
+//                   <td>{l.name}</td>
+//                   <td>{l.date}</td>
+//                   <td>{l.reason}</td>
+//                   <td>{l.status}</td>
+//                 </tr>
+//               ))
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </div>
+
+//   </div>
+// );
+// }
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
@@ -1729,9 +3112,28 @@ import {
   query,
   where,
   updateDoc,
-  doc
+  doc,
+  onSnapshot
 } from "firebase/firestore";
 import { db } from "./firebase";
+
+const OFFICE_LAT = 17.448381;   
+const OFFICE_LNG = 78.399465;   
+const ALLOWED_RADIUS = 100;     
+
+function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+      Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) ** 2;
+
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
 
 export default function Attendance() {
   const loggedEmployee = JSON.parse(localStorage.getItem("loggedEmployee"));
@@ -1743,109 +3145,385 @@ export default function Attendance() {
 
   const uid = loggedEmployee.uid;
   const name = loggedEmployee.name;
+  const email = loggedEmployee.email; // ✅ ADD THIS
+
 
   const [records, setRecords] = useState([]);
   const [currentRecord, setCurrentRecord] = useState(null);
+  const [leaves, setLeaves] = useState([]);
+  const [leaveReason, setLeaveReason] = useState("");
+  // const [leaveDate, setLeaveDate] = useState("");
+  const [leaveFrom, setLeaveFrom] = useState("");
+const [leaveTo, setLeaveTo] = useState("");
+
+
+  // NEW STATES to disable buttons while processing
+  const [isCheckInDisabled, setIsCheckInDisabled] = useState(false);
+  const [isCheckOutDisabled, setIsCheckOutDisabled] = useState(false);
 
   const today = new Date().toDateString();
 
-  /* ================= LOAD ATTENDANCE ================= */
+  useEffect(() => {
+    const q = query(collection(db, "leaves"), where("uid", "==", uid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setLeaves(data);
+    });
+    return () => unsubscribe();
+  }, [uid]);
+
   useEffect(() => {
     const loadAttendance = async () => {
-      const q = query(
-        collection(db, "attendance"),
-        where("uid", "==", uid)
-      );
-
+      const q = query(collection(db, "attendance"), where("uid", "==", uid));
       const snap = await getDocs(q);
       const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
       setRecords(data);
-
       const open = data.find(r => r.date === today && !r.checkOut);
       setCurrentRecord(open || null);
     };
-
     loadAttendance();
-  }, [uid]);
+  }, [uid, today]);
 
-  /* ================= CHECK IN ================= */
+  // const handleLeaveSubmit = async () => {
+  //   if (!leaveDate || !leaveReason) {
+  //     alert("Please enter date and reason");
+  //     return;
+  //   }
+  //   await addDoc(collection(db, "leaves"), {
+  //     uid,
+  //     name,
+  //     email,
+  //     date: leaveDate,
+  //     reason: leaveReason,
+  //     status: "Pending",
+  //     createdAt: Date.now()
+  //   });
+  //   setLeaveDate("");
+  //   setLeaveReason("");
+  //   alert("Leave applied successfully!");
+  // };
+const handleLeaveSubmit = async () => {
+  if (!leaveFrom || !leaveTo || !leaveReason) {
+    alert("Please enter from date, to date and reason");
+    return;
+  }
+
+  if (new Date(leaveFrom) > new Date(leaveTo)) {
+    alert("From date cannot be after To date");
+    return;
+  }
+
+  await addDoc(collection(db, "leaves"), {
+    uid,
+    name,
+    email,
+    fromDate: leaveFrom,
+    toDate: leaveTo,
+    reason: leaveReason,
+    status: "Pending",
+    createdAt: Date.now()
+  });
+
+  setLeaveFrom("");
+  setLeaveTo("");
+  setLeaveReason("");
+
+  alert("Leave applied successfully!");
+};
+
   const handleCheckIn = async () => {
     if (currentRecord) {
       alert("Already checked in today");
       return;
     }
-
-    const now = new Date();
-
-    await addDoc(collection(db, "attendance"), {
-      uid,
-      name,
-      date: today,
-      checkIn: now.toLocaleTimeString(),
-      checkInTimeISO: now.toISOString(), // 🔥 store ISO for calculation
-      checkOut: "",
-      hours: "",
-      createdAt: Date.now()
-    });
-
-    alert("Check-in successful");
-    window.location.reload();
-  };
-
-  /* ================= CHECK OUT ================= */
-  const handleCheckOut = async () => {
-    if (!currentRecord) {
-      alert("No active check-in");
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
       return;
     }
 
+    setIsCheckInDisabled(true); // disable button immediately
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const userLat = position.coords.latitude;
+        const userLng = position.coords.longitude;
+
+        const distance = getDistanceInMeters(userLat, userLng, OFFICE_LAT, OFFICE_LNG);
+
+        if (distance > ALLOWED_RADIUS) {
+          alert("❌ You are not at office location. Check-in denied.");
+          setIsCheckInDisabled(false); // re-enable if denied
+          return;
+        }
+
+        const now = new Date();
+
+        await addDoc(collection(db, "attendance"), {
+          uid,
+          name,
+     
+          date: today,
+          checkIn: now.toLocaleTimeString(),
+          checkInTimeISO: now.toISOString(),
+          checkOut: "",
+          hours: "",
+          createdAt: Date.now(),
+          location: { lat: userLat, lng: userLng }
+        });
+
+        alert("✅ Check-in successful");
+        setIsCheckInDisabled(false); // re-enable after success
+      },
+      () => {
+        alert("❌ Location permission denied");
+        setIsCheckInDisabled(false); // re-enable if location denied
+      }
+    );
+  };
+
+  // const handleCheckOut = async () => {
+  //   if (!currentRecord) {
+  //     alert("No active check-in");
+  //     return;
+  //   }
+
+  //   setIsCheckOutDisabled(true); // disable button immediately
+
+  //   const now = new Date();
+  //   const checkInTime = new Date(currentRecord.checkInTimeISO);
+
+  //   const diffMs = now - checkInTime;
+  //   const totalMinutes = Math.floor(diffMs / (1000 * 60));
+  //   const hours = Math.floor(totalMinutes / 60);
+  //   const minutes = totalMinutes % 60;
+
+  //   await updateDoc(doc(db, "attendance", currentRecord.id), {
+  //     checkOut: now.toLocaleTimeString(),
+  //     hours: `${hours} hr ${minutes} min`
+  //   });
+
+  //   alert("Check-out successful");
+  //   setIsCheckOutDisabled(false); // re-enable button
+  // };
+
+
+const handleCheckOut = async () => {
+  if (!currentRecord) {
+    alert("No active check-in found");
+    return;
+  }
+
+  setIsCheckOutDisabled(true);
+
+  try {
     const now = new Date();
     const checkInTime = new Date(currentRecord.checkInTimeISO);
 
-    // 🔥 CALCULATE HOURS
-    const diffMs = now - checkInTime; // milliseconds
-    const hoursWorked = (diffMs / (1000 * 60 * 60)).toFixed(2); // hours with 2 decimals
+    if (isNaN(checkInTime.getTime())) {
+      throw new Error("Invalid check-in time");
+    }
+
+    const diffMs = now - checkInTime;
+    const totalMinutes = Math.floor(diffMs / (1000 * 60));
+
+    
+    if (totalMinutes < 570) {
+      throw new Error(
+        `Minimum 9hrs 30min working hours required. You worked only ${Math.floor(
+          totalMinutes / 60
+        )}h ${totalMinutes % 60}m`
+      );
+    }
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
 
     await updateDoc(doc(db, "attendance", currentRecord.id), {
       checkOut: now.toLocaleTimeString(),
-      hours: hoursWorked
+      checkOutTimeISO: now.toISOString(),
+      totalMinutes: totalMinutes,
+      hours: `${hours} hr ${minutes} min`,
+      status: "COMPLETED"
     });
 
-    alert(`Check-out successful. Hours worked: ${hoursWorked}`);
-    window.location.reload();
-  };
+    alert("Check-out successful");
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    setIsCheckOutDisabled(false); // ✅ ALWAYS re-enable
+  }
+};
 
-  /* ================= RENDER ================= */
+
+
   return (
-    <div>
-      <h2>Attendance</h2>
+    <div className="attendance-container">
+      <div className="vamsi" style={{ backgroundColor: "grey" }}>
+        <h2 style={{ textAlign: "center" }}>
+          Hi Welcome <span style={{ color: "#e32b87ff", fontWeight: "700" }}>{name}</span>!
+        </h2>
+      </div>
 
-      <button onClick={handleCheckIn}>Check In</button>
-      <button onClick={handleCheckOut}>Check Out</button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "40px",
+          margin: "20px 0",
+          flexWrap: "wrap"
+        }}
+      >
+        <button
+          style={{ backgroundColor: "green", padding: "15px", borderRadius: "5px" }}
+          onClick={handleCheckIn}
+          disabled={isCheckInDisabled}
+        >
+          {isCheckInDisabled ? "Processing..." : "Check In"}
+        </button>
 
-      <h3>Your Records</h3>
+        <button
+          style={{ backgroundColor: "red", padding: "15px", borderRadius: "5px" }}
+          onClick={handleCheckOut}
+          disabled={isCheckOutDisabled}
+        >
+          {isCheckOutDisabled ? "Processing..." : "Check Out"}
+        </button>
+      </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-            <th>Hours</th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map(r => (
-            <tr key={r.id}>
-              <td>{r.date}</td>
-              <td>{r.checkIn}</td>
-              <td>{r.checkOut || "-"}</td>
-              <td>{r.hours || "-"}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* ===== Attendance Records ===== */}
+      <div className="wrapper">
+        <h3>Your Attendance Records</h3>
+        <div className="sat">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              {records.length === 0 ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: "center" }}>No records</td>
+                </tr>
+              ) : (
+                records.map(r => (
+                  <tr key={r.id}>
+                    <td>{r.date}</td>
+                    <td>{r.name}</td>
+                    <td>{r.checkIn || "-"}</td>
+                    <td>{r.checkOut || "-"}</td>
+                    <td>{r.hours || "-"}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ===== Apply Leave ===== */}
+      {/* <div className="card">
+        <h2>Apply for Leave</h2>
+        <input type="date" value={leaveDate} onChange={(e) => setLeaveDate(e.target.value)} />
+        <input type="text" placeholder="Reason" value={leaveReason} onChange={(e) => setLeaveReason(e.target.value)} />
+        <button className="btn btn-checkin" onClick={handleLeaveSubmit}>Apply Leave</button>
+      </div> */}
+      <div className="card">
+  <h2>Apply for Leave</h2>
+
+  <label>From Date</label>
+  <input
+    type="date"
+    value={leaveFrom}
+    onChange={(e) => setLeaveFrom(e.target.value)}
+  />
+
+  <label>To Date</label>
+  <input
+    type="date"
+    value={leaveTo}
+    onChange={(e) => setLeaveTo(e.target.value)}
+  />
+
+  <input
+    type="text"
+    placeholder="Reason"
+    value={leaveReason}
+    onChange={(e) => setLeaveReason(e.target.value)}
+  />
+
+  <button className="btn btn-checkin" onClick={handleLeaveSubmit}>
+    Apply Leave
+  </button>
+</div>
+
+
+      {/* ===== Leave Records ===== */}
+      <div className="card">
+        <h2>Leave Records</h2>
+        <div className="sat">
+          <table className="table">
+            {/* <thead>
+              <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+              </tr>
+            </thead> */}
+            <thead>
+  <tr>
+    <th>Name</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Reason</th>
+    <th>Status</th>
+  </tr>
+</thead>
+
+            {/* <tbody>
+              {leaves.length === 0 ? (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>No leave records</td>
+                </tr>
+              ) : (
+                leaves.map(l => (
+                  <tr key={l.id}>
+                    <td>{l.name}</td>
+                    <td>{l.date}</td>
+                    <td>{l.reason}</td>
+                    <td>{l.status}</td>
+                  </tr>
+                ))
+              )}
+            </tbody> */}
+            <tbody>
+  {leaves.length === 0 ? (
+    <tr>
+      <td colSpan="5" style={{ textAlign: "center" }}>
+        No leave records
+      </td>
+    </tr>
+  ) : (
+    leaves.map(l => (
+      <tr key={l.id}>
+        <td>{l.name}</td>
+        <td>{l.fromDate}</td>
+        <td>{l.toDate}</td>
+        <td>{l.reason}</td>
+        <td>{l.status}</td>
+      </tr>
+    ))
+  )}
+</tbody>
+
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

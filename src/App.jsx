@@ -8,6 +8,12 @@ import AdminDashboard from "./Admin";
 import AdminLogin from "./Adminlogin";
 import Payroll from "./Payroll";
 import Register from "./Register";
+import Empmain from "./Empmain";
+import Addwork from "./Addwork";
+import Adminworklogs from "./Adminworklogs";
+import EmployeePayroll from "./EmployeePayroll";
+
+
 export default function App() {
   return (
   
@@ -21,6 +27,11 @@ export default function App() {
          <Route path="/" element={<AdminLogin/>}/>
          <Route path="payroll" element={<Payroll/>}/>
          <Route path="/register" element={<Register />} />
+         <Route path="/empmain" element={<Empmain/>}/>
+         <Route path ="/addwork" element={<Addwork/>}/>
+          <Route path ="/adminworklogs" element={<Adminworklogs/>}/>
+          <Route path ="/employeepayroll" element ={<EmployeePayroll/>}/>
+       
 
 
       </Routes>

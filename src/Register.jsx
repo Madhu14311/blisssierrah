@@ -140,10 +140,12 @@ import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailA
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "./firebase";
 
+
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleRegister = async (e) => {
@@ -196,30 +198,119 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Name"
-        required
-      />
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button type="submit">Register</button>
-      {message && <p>{message}</p>}
-    </form>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#797b7ec8"
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#c4d5eec8",
+          padding: "40px 30px",
+          borderRadius: "12px",
+          boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+          width: "350px",
+          textAlign: "center"
+        }}
+      >
+        <h2 style={{ marginBottom: "20px", color: "#ee3bdcff" }}>Register</h2>
+        <form onSubmit={handleRegister}>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Name"
+            required
+            style={{
+              width: "100%",
+              padding: "12px 15px",
+              margin: "10px 0",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              fontSize: "16px",
+              outline: "none"
+            }}
+          />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            required
+            style={{
+              width: "100%",
+              padding: "12px 15px",
+              margin: "10px 0",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              fontSize: "16px",
+              outline: "none"
+            }}
+          />
+          <div style={{ position: "relative", margin: "10px 0" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              required
+              style={{
+                width: "100%",
+                padding: "12px 15px",
+                margin:"10px 0",
+                border: "1px solid #ccc",
+                borderRadius: "6px",
+                fontSize: "16px",
+                outline: "none",
+              }}
+            />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                cursor: "pointer",
+                fontSize: "18px",
+                color: "#888",
+                userSelect: "none",
+              }}
+            >
+              {showPassword ? "🙈🤦‍♂️" : "👁️"}
+            </span>
+          </div>
+          <button
+            type="submit"
+            style={{
+              width: "70%",
+              padding: "10px",
+              margin:"15px",
+              marginTop: "15px",
+              backgroundColor: "#22c55e",
+              color: "#fff",
+              border: "none",
+              borderRadius: "9px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "background-color 0.3s ease",
+              fontSize:"19px",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#16a34a")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#22c55e")}
+          >
+            Register
+          </button>
+        </form>
+        {message && (
+          <p style={{ marginTop: "15px", color: "#16a34a", fontWeight: "500" }}>
+            {message}
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
-

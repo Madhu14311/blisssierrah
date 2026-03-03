@@ -220,50 +220,95 @@
 //   return null; // UI remains same, logic updated
 // }
 import React, { useState, useEffect } from "react";
-import { collection, addDoc, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  deleteDoc,
+  doc
+} from "firebase/firestore";
 import { db } from "./firebase";
+import { FaHome } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./Employee.css";
 
 export default function Employee() {
   const [employees, setEmployees] = useState([]);
   const [empName, setEmpName] = useState("");
   const [empEmail, setEmpEmail] = useState("");
+  const navigate = useNavigate();
 
-  // Real-time employees
+  /* ===== REAL-TIME EMPLOYEE LIST ===== */
   useEffect(() => {
     const unsub = onSnapshot(collection(db, "employees"), snap => {
-      setEmployees(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      const list = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+      setEmployees(list);
     });
+
     return () => unsub();
   }, []);
 
+  /* ===== ADD EMPLOYEE ===== */
   const addEmployee = async () => {
-    if (!empName || !empEmail) return alert("Fill all fields");
+    if (!empName || !empEmail) {
+      alert("Please fill all fields");
+      return;
+    }
 
     await addDoc(collection(db, "employees"), {
       name: empName,
       email: empEmail,
-      role: "employee"
+      role: "employee",
+      createdAt: new Date()
     });
 
     setEmpName("");
     setEmpEmail("");
   };
 
+  /* ===== DELETE EMPLOYEE ===== */
   const deleteEmployee = async (id) => {
     await deleteDoc(doc(db, "employees", id));
   };
 
   return (
-    <div className="employee-container">
+    <div className="employee-container" style={{ position: "relative" }}>
+      
+      {/* HOME ICON */}
+      <FaHome
+        size={34}
+        title="Home"
+        onClick={() => navigate("/mail")}
+        style={{
+          position: "absolute",
+          top: "20px",
+          left: "20px",
+          cursor: "pointer",
+          color: "brown"
+        }}
+      />
+
       <h1>Employee Management</h1>
 
+      {/* ADD EMPLOYEE FORM */}
       <div className="form-row">
-        <input placeholder="Name" value={empName} onChange={e => setEmpName(e.target.value)} />
-        <input placeholder="Email" value={empEmail} onChange={e => setEmpEmail(e.target.value)} />
+        <input
+          placeholder="Name"
+          value={empName}
+          onChange={(e) => setEmpName(e.target.value)}
+        />
+        <input
+          placeholder="Email"
+          value={empEmail}
+          onChange={(e) => setEmpEmail(e.target.value)}
+        />
         <button onClick={addEmployee}>Add</button>
       </div>
 
+      {/* EMPLOYEE TABLE */}
       <table className="table">
         <thead>
           <tr>
@@ -273,15 +318,23 @@ export default function Employee() {
           </tr>
         </thead>
         <tbody>
-          {employees.map(emp => (
-            <tr key={emp.id}>
-              <td>{emp.name}</td>
-              <td>{emp.email}</td>
-              <td>
-                <button onClick={() => deleteEmployee(emp.id)}>Delete</button>
-              </td>
+          {employees.length === 0 ? (
+            <tr>
+              <td colSpan="3">No employees found</td>
             </tr>
-          ))}
+          ) : (
+            employees.map(emp => (
+              <tr key={emp.id}>
+                <td>{emp.name}</td>
+                <td>{emp.email}</td>
+                <td>
+                  <button onClick={() => deleteEmployee(emp.id)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

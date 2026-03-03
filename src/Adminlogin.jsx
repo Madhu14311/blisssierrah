@@ -747,6 +747,166 @@
 //     </div>
 //   );
 // }
+// import { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+// import { doc, getDoc } from "firebase/firestore";
+// import { auth, db } from "./firebase";
+
+// import "./Adminlogin.css";
+// import logo1 from "./assets/logo3.jpg";
+// import image from "./assets/image.png";
+
+// export default function Login() {
+//   const navigate = useNavigate();
+
+//   const [loading, setLoading] = useState(true);
+//   const [role, setRole] = useState("user");
+//   const [emailOrId, setEmailOrId] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [showPassword, setShowPassword] = useState(false);
+
+//   useEffect(() => {
+//     const timer = setTimeout(() => setLoading(false), 1200);
+//     return () => clearTimeout(timer);
+//   }, []);
+
+//   // 🔐 LOGIN USING FIREBASE AUTH (FIXED)
+//   const handleLogin = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       const res = await signInWithEmailAndPassword(
+//         auth,
+//         emailOrId,
+//         password
+//       );
+
+//       // ❌ Block unverified users
+//       if (!res.user.emailVerified) {
+//         await signOut(auth);
+//         alert("Please verify your email before login");
+//         return;
+//       }
+
+//       const uid = res.user.uid;
+
+//       // 🔥 FETCH EMPLOYEE NAME (FIX)
+//       let name = "Unknown";
+//       const snap = await getDoc(doc(db, "employees", uid));
+//       if (snap.exists()) {
+//         name = snap.data().name;
+//       }
+
+//       // ✅ SAVE COMPLETE SESSION (FIX)
+//       localStorage.setItem(
+//         "loggedEmployee",
+//         JSON.stringify({
+//           uid,
+//           email: res.user.email,
+//           name,        // 🔥 ADDED
+//           role
+//         })
+//       );
+
+//       // 🔐 ADMIN LOGIN
+//       if (role === "admin") {
+//         if (emailOrId === "contactbliss11@gmail.com") {
+//           navigate("/mail");
+//         } else {
+//           alert("❌ Not authorized as Admin");
+//           await signOut(auth);
+//         }
+//         return;
+//       }
+
+//       // 👤 EMPLOYEE LOGIN
+//       navigate("/empmain");
+
+//     } catch (error) {
+//       alert("❌ Invalid Email or Password");
+//     }
+//   };
+
+//   if (loading) {
+//     return (
+//       <div className="loader-screen">
+//         <div className="loader-circle"></div>
+//         <p className="loader-text">Loading HRMS...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+
+//   <div className="login-container">
+
+//     <div className="brand-title">
+//       <img src={image} alt="Brand" />
+//     </div>
+
+//     <div className="image-panel">
+//       <img src={logo1} alt="Illustration" />
+//     </div>
+
+//     <div className="form-panel">
+//       <h2 className="login-title">HRMS Login</h2>
+
+//       <form onSubmit={handleLogin} className="login-form">
+
+//         <label>Login As</label>
+//         <select
+//           value={role}
+//           onChange={(e) => setRole(e.target.value)}
+//         >
+//           <option value="user">Employee</option>
+//           <option value="admin">Admin</option>
+//         </select>
+
+//         <input
+//           type="email"
+//           placeholder={role === "admin" ? "Admin Email" : "Employee Email"}
+//           value={emailOrId}
+//           onChange={(e) => setEmailOrId(e.target.value)}
+//           required
+//         />
+
+//         <div className="password-wrapper">
+//           <input
+//             type={showPassword ? "text" : "password"}
+//             placeholder="Password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             required
+//           />
+//           <span
+//             className="eye-icon"
+//             onClick={() => setShowPassword(!showPassword)}
+//           >
+//             👁️
+//           </span>
+//         </div>
+
+//         <button type="submit" className="login-btn">
+//            Login as {role === "admin" ? "Admin" : "Employee"}
+//         </button>
+//                    <p style={{ marginTop: "15px", textAlign: "center" }}>
+//              New user?{" "}
+//              <span
+//                style={{ color: "#007bff", cursor: "pointer", fontWeight: "bold" }}
+//                onClick={() => navigate("/register")}
+//              >
+//             Register here
+//              </span>
+//            </p>
+
+//       </form>
+//     </div>
+//   </div>
+// )};
+
+
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
@@ -757,6 +917,14 @@ import "./Adminlogin.css";
 import logo1 from "./assets/logo3.jpg";
 import image from "./assets/image.png";
 
+/* ===========================
+   PASSKEY SUPPORT CHECK
+=========================== */
+const isPasskeySupported = async () => {
+  if (!window.PublicKeyCredential) return false;
+  return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+};
+
 export default function Login() {
   const navigate = useNavigate();
 
@@ -766,12 +934,60 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  /* ===========================
+     LOADER
+  =========================== */
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(timer);
   }, []);
 
-  // 🔐 LOGIN USING FIREBASE AUTH (FIXED)
+  /* ===========================
+     FINGERPRINT LOGIN
+  =========================== */
+  const handleFingerprintLogin = async () => {
+    try {
+      const supported = await isPasskeySupported();
+      if (!supported) {
+        alert("Fingerprint login not supported on this device");
+        return;
+      }
+
+      const enabled = localStorage.getItem("biometricEnabled");
+      const session = localStorage.getItem("loggedEmployee");
+
+      if (!enabled || !session) {
+        alert("Please login once using Email & Password");
+        return;
+      }
+
+      const challenge = new Uint8Array(32);
+      crypto.getRandomValues(challenge);
+
+      await navigator.credentials.get({
+        publicKey: {
+          challenge,
+          userVerification: "required",
+          timeout: 60000,
+        },
+      });
+
+      const user = JSON.parse(session);
+
+      if (user.role === "admin") {
+        navigate("/mail");
+      } else {
+        navigate("/empmain");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Fingerprint authentication failed");
+    }
+  };
+
+  /* ===========================
+     EMAIL / PASSWORD LOGIN
+  =========================== */
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -782,7 +998,6 @@ export default function Login() {
         password
       );
 
-      // ❌ Block unverified users
       if (!res.user.emailVerified) {
         await signOut(auth);
         alert("Please verify your email before login");
@@ -791,25 +1006,24 @@ export default function Login() {
 
       const uid = res.user.uid;
 
-      // 🔥 FETCH EMPLOYEE NAME (FIX)
       let name = "Unknown";
       const snap = await getDoc(doc(db, "employees", uid));
       if (snap.exists()) {
         name = snap.data().name;
       }
 
-      // ✅ SAVE COMPLETE SESSION (FIX)
       localStorage.setItem(
         "loggedEmployee",
         JSON.stringify({
           uid,
           email: res.user.email,
-          name,        // 🔥 ADDED
-          role
+          name,
+          role,
         })
       );
 
-      // 🔐 ADMIN LOGIN
+      localStorage.setItem("biometricEnabled", "true");
+
       if (role === "admin") {
         if (emailOrId === "contactbliss11@gmail.com") {
           navigate("/mail");
@@ -820,14 +1034,15 @@ export default function Login() {
         return;
       }
 
-      // 👤 EMPLOYEE LOGIN
-      navigate("/attendance");
-
+      navigate("/empmain");
     } catch (error) {
       alert("❌ Invalid Email or Password");
     }
   };
 
+  /* ===========================
+     LOADER UI
+  =========================== */
   if (loading) {
     return (
       <div className="loader-screen">
@@ -837,27 +1052,25 @@ export default function Login() {
     );
   }
 
+  /* ===========================
+     UI
+  =========================== */
   return (
     <div className="login-container">
       <div className="brand-title">
-        <img src={image} alt="" />
+        <img src={image} alt="Brand" />
       </div>
 
       <div className="image-panel">
-        <img src={logo1} alt="Login Illustration" />
+        <img src={logo1} alt="Illustration" />
       </div>
 
       <div className="form-panel">
         <h2 className="login-title">HRMS Login</h2>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="login-form">
           <label>Login As</label>
-
-          <select
-            className="role-select"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
+          <select value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="user">Employee</option>
             <option value="admin">Admin</option>
           </select>
@@ -878,17 +1091,24 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-
             <span
               className="eye-icon"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? "🙈🤦" : "👁️"}
+              👁️
             </span>
           </div>
 
           <button type="submit" className="login-btn">
             Login as {role === "admin" ? "Admin" : "Employee"}
+          </button>
+
+          <button
+            type="button"
+            className="fingerprint-btn"
+            onClick={handleFingerprintLogin}
+          >
+            🔐 Login with Fingerprint
           </button>
 
           <p style={{ marginTop: "15px", textAlign: "center" }}>
